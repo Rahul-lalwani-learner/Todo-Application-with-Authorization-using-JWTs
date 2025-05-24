@@ -1,6 +1,6 @@
 # 📝 JWT-Protected Todo App
 
-A simple Todo List web application with user authentication using **JWT (JSON Web Tokens)**. Users can sign up, log in, and manage their personal todo items. Built with **Node.js**, **Express.js**, **MongoDB**, and **Vanilla JS** for the frontend.
+A simple Todo List web application with user authentication using **JWT (JSON Web Tokens)**. Users can sign up, log in, and manage their personal todo items. Built with **Node.js**, **Express.js**, **File System**, and **Vanilla JS** for the frontend.
 
 ---
 
