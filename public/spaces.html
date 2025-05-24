@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Todo-Application-logIn</title>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+</head>
+<style>
+    body{
+        margin: 0;
+        padding: 0;
+        background-color: #0d1117;
+        font-family:'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+    }
+    #fullPage{
+        height: 100vh;
+        width: 100vw;
+        
+    }
+    #navbar{
+        display: flex;
+        justify-content: space-between;
+        height: 50px;
+        width: 80%;
+        background-color: white;
+        align-items: center;
+        position: relative;
+        top:25px;
+        left: 10%;
+        border: 2px solid #0a1525;
+        border-radius: 30px;
+
+    }
+    #navbar *{
+        margin: 10px 10%;
+    }
+    #username{
+        font-weight: 600;
+    }
+    #logout{
+        padding: 5px 15px;
+        background-color: #005ba4;
+        border: 0px;
+        border-radius: 8px;
+        color: white;
+        font-size:medium;
+        cursor: pointer;
+        font-weight: 600;
+        font-size: small;
+    }
+
+    
+
+    #mainSection{
+        display: flex;
+        flex-direction: column;
+        width: 100%;
+        height: 90%;
+        background-color: #0d1117;
+        align-items: center;
+        
+    }
+    #spaces{
+        /* height: 100%; */
+        width: 90%;
+        margin-top: 5rem;
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+    .space{
+        background-color: #161a20;
+        height: 8rem;
+        width: 150px;
+        border: 1px solid #414449;
+        box-shadow: 1px 1px 10px black;
+        border-radius: 5px;
+        margin: 1%;
+        display: flex;
+        justify-content:space-around;
+        align-items: center;
+        flex-direction: column;
+        padding: 5px;
+        position: relative;
+    }
+    .spaceName{
+        color: white;
+        font-weight: 600;
+        overflow: hidden;
+        width: 100%;
+        text-align: center;
+    }
+    #add-task{
+        cursor: pointer;
+    }
+    #message{
+        border: 2px solid whitesmoke;
+        /* color: green; */
+        border-radius: 5px;
+        padding: 5px 0px;
+        position: absolute;
+        width: 50%;
+        height: 20px;
+        background-color: white;
+        overflow: auto;
+        text-align: center;
+        margin: auto;
+        top: 15%;
+        left: 25%;
+        font-weight: 800;
+        display: none;
+        z-index: 3;
+    }
+    #newSpace-btn{
+        padding: 5px 15px;
+        background-color: #005ba4;
+        border: 0px;
+        border-radius: 8px;
+        color: white;
+        font-size:medium;
+        cursor: pointer;
+        font-weight: 600;
+        font-size: small;
+        position: sticky;
+        bottom: 10px;
+        margin-top: 20px;
+    }
+    #addSpaceSection{
+        position: absolute;
+        height: 100%;
+        width: 100%;
+        display: none;
+        justify-content: center;
+        align-items: center;
+        top: 0px;
+    }
+    #spaceInput{
+        background-color: #161a20;
+        height: 10em;
+        width: 20em;
+        border: 1px solid #414449;
+        border-radius: 10px;
+        z-index: 3;
+        display: flex;
+        justify-content: space-around;
+        align-items: center;
+        flex-direction: column;
+    }
+    #overlay{
+        display: none;
+        position: absolute;
+        top: 0px;
+        height: 100%;
+        width: 100%;
+        backdrop-filter: blur(4px); /* this is the magic */ 
+        z-index: 2;
+    }
+    .space-btn{
+        padding: 5px 15px;
+        background-color: #005ba4;
+        border: 0px;
+        border-radius: 8px;
+        color: white;
+        font-size:medium;
+        cursor: pointer;
+        font-weight: 600;
+        font-size: small;
+        margin: 0px 10px;
+    }
+    #newSpaceName{
+        text-align: center;
+        padding: 10px 5px;
+        font-size: medium;
+        font-weight: 600;
+        margin-top: 10px;
+    }
+    .hoverbtn:hover{
+        background-color: rgb(1, 1, 184)  !important;
+        transition: background-color 0.3s ease;
+    }
+    .delete-button {
+        background-color: #f44336;  /* red */
+        color: white;
+        border: none;
+        padding: 2px 5px;
+        border-radius: 3px;
+        cursor: pointer;
+        font-size: 10px;
+        transition: background-color 0.3s ease, transform 0.2s ease;
+        position: absolute;
+        bottom: 3px;
+        left: 3px;
+    }
+
+    .delete-button:hover {
+        background-color: #d32f2f;
+        transform: scale(1.05);
+    }
+
+    .delete-button:active {
+        background-color: #b71c1c;
+        transform: scale(0.95);
+    }
+    .divclick{
+        cursor: pointer;
+        background-color: #161a20;;
+        border: 0px;
+    }
+
+</style>
+<body>
+    <div id="message">
+        
+    </div>
+    <div id="overlay">
+
+    </div>
+    <div id="fullPage">
+        <div id="navbar">
+            <div id="username">
+                Welcome, Rahul
+            </div>
+            <button id="logout" class="hoverbtn" onclick="logOut()">
+                Log Out
+            </button>
+        </div>
+        <div id="mainSection">
+            <div id="spaces">
+                <!-- <div class="space" id="space-1" >
+                    <div class="spaceName" contenteditable = true>Office work</div>
+                    <svg onclick = "goToSpace(1)" xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32">
+                        <circle cx="16" cy="16" r="15" fill="white" stroke="#005ba4" stroke-width="2"/>
+                        <line x1="16" y1="10" x2="16" y2="22" stroke="#005ba4" stroke-width="3"/>
+                        <line x1="10" y1="16" x2="22" y2="16" stroke="#005ba4" stroke-width="3"/>
+                    </svg>
+                    <button class="delete-button" >delete</button>
+                </div>  
+                <div class="space" id="space-2" >
+                    <div class="spaceName" contenteditable = true>new work</div>
+                    <button class = 'divclick' onclick = "goToSpace(2)">
+                    <svg  xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32">
+                        <circle cx="16" cy="16" r="15" fill="white" stroke="#005ba4" stroke-width="2"/>
+                        <line x1="16" y1="10" x2="16" y2="22" stroke="#005ba4" stroke-width="3"/>
+                        <line x1="10" y1="16" x2="22" y2="16" stroke="#005ba4" stroke-width="3"/>
+                    </svg>
+                    </button>
+                </div>   -->
+            </div>
+            <button id="newSpace-btn" class="hoverbtn" onclick="addNewSpace()">Create New Space</button>
+        </div>
+        <div id="addSpaceSection">
+            <div id="spaceInput">
+                <input type="text" name="newSpaceName" id="newSpaceName" placeholder="Enter Space Name">
+                <div id="spaceSubmit">
+                    <button class = 'space-btn' class="hoverbtn" onclick="createSpace()">Create</button>
+                    <button class = 'space-btn' class="hoverbtn" onclick="back2normal()">Back</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+        async function logOut(){
+
+            const response = await axios.get('/logout');
+            displayMessage("You are logged out", 'red', 3000);
+            setTimeout(function(){
+                window.location.href = '/login';
+            }, 3000)
+        }
+
+        
+        function displayMessage(message, color, time){
+            const messageEl = document.getElementById('message');
+            messageEl.innerText = message;
+            messageEl.style.color = color;
+            messageEl.style.display = 'block';
+            setTimeout(()=>{
+                messageEl.style.display = 'none'
+            }, time)
+        }
+        function back2normal(){
+            const spaceEl = document.getElementById('addSpaceSection');
+            const overlayEl = document.getElementById('overlay');
+            const spaceInput = document.getElementById('newSpaceName');
+            spaceInput.value = '';
+            spaceEl.style.display = 'none';
+            overlayEl.style.display = 'none';
+        }
+        function addNewSpace(){
+            const spaceEl = document.getElementById('addSpaceSection');
+            const overlayEl = document.getElementById('overlay');
+            spaceEl.style.display = 'flex';
+            overlayEl.style.display = 'block';
+        }
+        async function createSpace(){
+            const spaceInput = document.getElementById('newSpaceName').value.trim();
+            back2normal();
+            try{
+                const response = await axios.post('/createSpace', {
+                    newSpaceName: spaceInput
+                })
+                displayMessage(response.data.message, 'green', 2000);
+
+            }catch(error){
+                displayMessage(error.response.data.message, 'red', 2000);
+            }
+            loadContent()
+        }
+
+        async function deleteSpace(id){
+            try{
+                const response = await axios.delete('/deleteSpace', {
+                    data: {
+                        spaceId : id
+                    }
+                })
+                displayMessage(response.data.message, 'green', 2000);
+
+            }catch(error){
+                displayMessage(error.response.data.message, 'red', 2000);
+            }
+            loadContent()
+        }
+
+        function spaceComponent(id, name){
+            let spaceEl = document.createElement('div');
+            spaceEl.className = 'space';
+            spaceEl.id = 'space-'+id;
+            let spaceNameEl = document.createElement('div');
+            spaceNameEl.contentEditable = false;
+            spaceNameEl.className = 'spaceName';
+            spaceNameEl.innerText = name;
+
+
+            // SVG namespace
+            const svgNS = "http://www.w3.org/2000/svg";
+
+            // Create <svg>
+            const divclick = document.createElement('button');
+            divclick.className = 'divclick'
+            divclick.setAttribute("onclick",`goToSpace(${id})`)
+
+            const svg = document.createElementNS(svgNS, "svg");
+            // svg.setAttribute("id", "add-task-"+id);
+
+            svg.setAttribute("xmlns", svgNS);
+            svg.setAttribute("width", "32");
+            svg.setAttribute("height", "32");
+            svg.setAttribute("viewBox", "0 0 32 32");
+
+            // Create <circle>
+            const circle = document.createElementNS(svgNS, "circle");
+            circle.setAttribute("cx", "16");
+            circle.setAttribute("cy", "16");
+            circle.setAttribute("r", "15");
+            circle.setAttribute("fill", "white");
+            circle.setAttribute("stroke", "#005ba4");
+            circle.setAttribute("stroke-width", "2");
+
+            // Create vertical <line>
+            const line1 = document.createElementNS(svgNS, "line");
+            line1.setAttribute("x1", "16");
+            line1.setAttribute("y1", "10");
+            line1.setAttribute("x2", "16");
+            line1.setAttribute("y2", "22");
+            line1.setAttribute("stroke", "#005ba4");
+            line1.setAttribute("stroke-width", "3");
+
+            // Create horizontal <line>
+            const line2 = document.createElementNS(svgNS, "line");
+            line2.setAttribute("x1", "10");
+            line2.setAttribute("y1", "16");
+            line2.setAttribute("x2", "22");
+            line2.setAttribute("y2", "16");
+            line2.setAttribute("stroke", "#005ba4");
+            line2.setAttribute("stroke-width", "3");
+
+            // Append elements to <svg>
+            svg.appendChild(circle);
+            svg.appendChild(line1);
+            svg.appendChild(line2);
+            
+            divclick.appendChild(svg);
+
+            spaceEl.appendChild(spaceNameEl);
+
+            spaceEl.appendChild(divclick);
+
+            const deleteEl = document.createElement('button');
+            deleteEl.className = "delete-button"
+            deleteEl.innerText = 'Delete'
+            deleteEl.setAttribute('onclick', `deleteSpace(${id})`);
+            spaceEl.appendChild(deleteEl);
+
+            return spaceEl;
+        }
+        async function loadContent(){
+            try{
+                // const response = await axios.get('/getUserInfo',{
+                //     headers: {
+                //         'token': localStorage.getItem('token')
+                //     }
+                // })
+                const response = await axios.get('/getUserInfo');
+                const usernameEl = document.getElementById('username');
+                usernameEl.innerText = "Welcome, "+response.data.username;
+                
+                const spacesEl = document.getElementById('spaces');
+                const spaces = response.data.spaces;
+                spacesEl.innerHTML  = '';
+                for(let i = 0;i<spaces.length;i++){
+                    const newSpace = spaceComponent(spaces[i].id, spaces[i].spaceName);
+                    spacesEl.appendChild(newSpace);
+                }
+            }
+            catch(error){
+                if(error.response.status === 404){
+                    displayMessage(error.response.data.message, 'red', 3000);
+                    setTimeout(function(){
+                        window.location.href = '/login';
+                    }, 3000)
+                }
+                else{
+                    displayMessage('Server Error: '+error.response.data.message, 'red', 3000);
+                    setTimeout(function(){
+                        window.location.href = '/login';
+                    }, 3000)
+                }
+            }
+        }
+        async function goToSpace(spaceId){
+            // alert("hello world");
+            const respose = await axios.get(`/space/${spaceId}`);
+            console.log(respose);
+            window.location.href = `/space/${spaceId}`;
+        }
+
+        window.onload = ()=>{
+            loadContent();
+        }
+    </script>
+</body>
+</html>

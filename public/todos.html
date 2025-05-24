@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Todo-Application-logIn</title>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+</head>
+<style>
+    *{  
+        margin: 0;
+        padding: 0;
+        overflow-x: hidden;
+        font-family:'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+    }
+    #message{
+        border: 2px solid whitesmoke;
+        border-radius: 5px;
+        padding: 5px 0px;
+        position: absolute;
+        width: 50%;
+        height: 20px;
+        background-color: white;
+        overflow: auto;
+        text-align: center;
+        margin: auto;
+        top: 20px;
+        left: 25%;
+        font-weight: 800;
+        display: none;
+    }
+    body{
+        height: 100%;
+        overflow-x: hidden;
+        background-color: #0d1117;
+    }
+    #fullPage{
+        min-height: 100vh;
+        width: 100vw;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        background-repeat: repeat;
+        background-size: auto;
+        background-color: #0d1117;
+
+    }
+    #topSection{
+        height: 70px;
+        width: 100%;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border-bottom: 1px solid #414449;
+    }
+
+    #topSection *{
+        margin: 0px 10% ;
+    }
+    .hoverbtn:hover{
+        background-color: rgb(1, 1, 184)  !important;
+        transition: background-color 0.3s ease;
+    }
+    #backBtn{
+        padding: 5px 15px;
+        background-color: #005ba4;
+        border: 0px;
+        border-radius: 8px;
+        color: white;
+        font-size:medium;
+        cursor: pointer;
+        font-weight: 600;
+        font-size: medium;
+    }
+    #spaceName{
+        font-weight: 600;
+        color: #005ba4;
+    }
+    #todoSection{
+        width: 90%;
+        height: 100%;
+        margin-top: 10px;
+        display: flex;
+        flex-direction: column;
+        background-image: repeating-linear-gradient(
+            to bottom, 
+            transparent,          /* Start: Transparent */
+            transparent 49px,     /* Transparent up to 39px */
+            #414449 50px        /* 1px line from 39px to 40px */
+        ); /* Light gray line */
+    }   
+    #todoSection::after{
+        content: '';
+        display: block;
+        height: 70px; /* Adjust according to the height of #inputTodo */
+    }
+    .todoItem{
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        height: 45px;
+        background-color: #161a20;
+        margin-bottom: 5px;
+        border-radius: 5px;
+    }
+    .todoItem:hover{
+        background-color: #282d34;
+        transition: background-color 0.3s ease;
+    }
+    .todoItem *{
+        margin: 0px 20px;
+    }
+    .delete-btn{
+        background-color: #f44336;  /* red */
+        color: white;
+        border: none;
+        padding: 2px 10px;
+        border-radius: 3px;
+        cursor: pointer;
+        font-size: small;
+        transition: background-color 0.3s ease, transform 0.2s ease;
+    }
+    .delete-btn:hover {
+        background-color: #d32f2f;
+        transform: scale(1.05);
+    }
+
+    .delete-btn:active {
+        background-color: #b71c1c;
+        transform: scale(0.95);
+    }
+
+    .Task{
+        width: 70%;
+        color: white;
+        font-size: medium;
+        margin: 0px;
+    }
+    .todoItem input{
+        border: none;
+    }
+    .todoItem input:checked{
+        /* background-color:#005ba4; */
+        color:#005ba4;
+    }
+    #inputTodo{
+        background-color: red;
+        width: 90%;
+        position: fixed;
+        bottom: 20px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        height: 45px;
+        background-color: #282d34;
+        border-radius: 5px;
+        border: 1px solid #414449;
+        overflow: hidden;
+    }
+    #todoInput{
+        width: 100%;
+        height: 95%;
+        background-color: #282d34;
+        border: none;
+        font-weight: 600;
+        font-size: medium;
+        color: white;
+        padding-left: 40px;
+        padding-right: 13%;
+    }
+    #todoInput:focus{
+        border: 1px solid #414449;
+    }
+    #plusIcon{
+        position: absolute;
+        left: 10px;
+    }
+    #addTodo{
+        padding: 5px 15px;
+        background-color: #005ba4;
+        border: 0px;
+        border-radius: 8px;
+        color: white;
+        font-size:medium;
+        cursor: pointer;
+        font-weight: 600;
+        font-size: medium;
+        position: absolute;
+        right: 10px;
+    }
+
+
+</style>
+<body>
+    <div id="message">
+
+    </div>
+    <div id="fullPage">
+        <div id="topSection">
+            <div id="spaceName">
+                SpaceName
+            </div>
+            <button id="backBtn" class="hoverbtn" onclick="Back2Space()">Back</button>
+        </div>
+        <div id="todoSection">
+            <!-- <div class="todoItem" id = "todoItem-1">
+                <input type="checkbox" name="checkbox" onclick="taskDone(1)">
+                <div class="Task" id = "Task-1">Compelete work</div>
+                <button class="delete-btn">delete</button>
+            </div>
+            <div class="todoItem" id = "todoItem-1">
+                <input type="checkbox" name="checkbox" id="checkbox">
+                <div class="Task">Compelete work</div>
+                <button class="delete-btn">delete</button>
+            </div>
+             <div class="todoItem" id = "todoItem-1">
+                <input type="checkbox" name="checkbox" id="checkbox">
+                <div class="Task">Compelete work</div>
+                <button class="delete-btn">delete</button>
+            </div>
+             <div class="todoItem" id = "todoItem-1">
+                <input type="checkbox" name="checkbox" id="checkbox">
+                <div class="Task">Compelete work</div>
+                <button class="delete-btn">delete</button>
+            </div>
+             <div class="todoItem" id = "todoItem-1">
+                <input type="checkbox" name="checkbox" id="checkbox">
+                <div class="Task">Compelete work</div>
+                <button class="delete-btn">delete</button>
+            </div> -->
+
+        </div>
+        <div id="inputTodo">
+            <svg id = "plusIcon" width="24" height="24" viewBox="0 0 24 24" fill="#005ba4" xmlns="http://www.w3.org/2000/svg">
+            <path d="M12 5V19M5 12H19" stroke="#005ba4" stroke-width="2.5" stroke-linecap="round" />
+            </svg>
+
+            <input type="text" name="todoInput" id="todoInput" placeholder="Try Writing some Task">
+            <button class="hoverbtn" id="addTodo" onclick="addTodo()">Add</button>
+        </div>
+
+    </div>
+    
+    <script>
+        const spaceId = window.location.pathname.split('/').at(-1); 
+        function displayMessage(message, color, time){
+            const messageEl = document.getElementById('message');
+            messageEl.innerText = message;
+            messageEl.style.color = color;
+            messageEl.style.display = 'block';
+            setTimeout(()=>{
+                messageEl.style.display = 'none'
+            }, time)
+        }
+
+        function Back2Space(){
+            window.location.href = '/space/';
+        }
+
+        async function addTodo(){
+            const todoInputEl = document.getElementById('todoInput');
+            const todoInputValue = todoInputEl.value.trim();
+            todoInputEl.value = '';
+            if(todoInputValue === ''){
+                return;
+            }
+            const response = await axios.post(`/space/${spaceId}/addTask`, {
+                taskText: todoInputValue
+            })
+            // displayMessage(response.data, 'green', 2000);
+            loadContent();
+        }
+
+        document.getElementById('todoInput').addEventListener('keydown', function(event) {
+            if (event.key === 'Enter') {
+                addTodo(); // Call your function to add a task
+            }
+        });
+
+        async function taskDone(id) {
+            const taskElement = document.getElementById(`Task-${id}`);
+            const checkbox = document.querySelector(`#todoItem-${id} input[type="checkbox"]`);
+            if (checkbox.checked) {
+                // taskElement.style.color = "grey";
+                // taskElement.style.textDecoration = "line-through";
+                const response = await axios.post(`/space/${spaceId}/taskdone`, {
+                    taskId: id
+                })
+                // displayMessage(response, 'green', 2000);
+
+            } else {
+                // taskElement.style.color = "white";
+                // taskElement.style.textDecoration = "none";
+                const response = await axios.post(`/space/${spaceId}/taskundone`, {
+                    taskId: id
+                })
+                // displayMessage(response, 'red', 2000);
+            }
+
+            loadContent();
+        }
+        async function deleteTask(id) {
+            const response = await axios.post(`/space/${spaceId}/deleteTask`, {
+                taskId: id
+            })
+            // displayMessage(response.data, 'green', 2000);
+            loadContent();
+        }
+
+        function TaskComponent(id, taskText, done){
+            const todoItem = document.createElement("div");
+            todoItem.className = "todoItem";
+            todoItem.id = `todoItem-${id}`;
+
+            // Create checkbox
+            const checkbox = document.createElement("input");
+            checkbox.type = "checkbox";
+            checkbox.name = "checkbox";
+            checkbox.checked = done;
+            checkbox.setAttribute('onclick', `taskDone(${id})`)
+
+            // Create task div
+            const taskDiv = document.createElement("div");
+            taskDiv.className = "Task";
+            taskDiv.id = `Task-${id}`;
+            taskDiv.textContent = taskText;
+            if(checkbox.checked) {
+                taskDiv.style.color = "grey";
+                taskDiv.style.textDecoration = "line-through";
+            }
+
+            // Create delete button
+            const deleteButton = document.createElement("button");
+            deleteButton.className = "delete-btn";
+            deleteButton.textContent = "delete";
+            deleteButton.setAttribute('onclick', `deleteTask(${id})`);
+
+            // Append children
+            todoItem.appendChild(checkbox);
+            todoItem.appendChild(taskDiv);
+            todoItem.appendChild(deleteButton);
+
+            return todoItem;
+        }
+        async function loadContent(){
+            const spaceNameEl = document.getElementById('spaceName');
+            const todoSecitonEl = document.getElementById('todoSection');
+
+            try{
+                const response = await axios.get(`/space/${spaceId}/getTodos`)
+                const spaceName = response.data.spaceName;
+                const Tasks = response.data.Tasks;
+                spaceNameEl.innerText = spaceName;
+                todoSecitonEl.innerHTML = '';
+                for(let i = 0;i<Tasks.length;i++){
+                    const newTasks = TaskComponent(Tasks[i].taskId, Tasks[i].task, Tasks[i].done);
+                    todoSecitonEl.appendChild(newTasks);
+                }
+            }
+            catch(error){
+                displayMessage(error, 'red', 30000);
+            }
+        }
+
+        window.onload = loadContent;
+
+    </script>
+</body>
+</html>
